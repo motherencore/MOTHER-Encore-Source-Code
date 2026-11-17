@@ -8,7 +8,7 @@ signal settings_changed
 signal party_changed
 signal scene_changed
 
-const GAME_VERSION := "0.4.1.1"
+const GAME_VERSION := "0.4.1.2"
 const ACT := 2
 
 const LANGUAGES := ["en", "fr", "it", "ja", "ko", "es", "es_ES", "pt_BR", "pl", "de", "ru", "uk", "zh_Hans_CN"]
@@ -41,6 +41,7 @@ var talker: KinematicBody2D = null
 var in_cutscene := false
 var can_pause := true
 var entering_door := false
+var changing_scenes := false
 
 var _phone_location := ""
 
@@ -666,6 +667,8 @@ func _try_party_level_up(changed_stats := {}, learned_skills := {}):
 				get_player().pause()
 				yield(get_tree().create_timer(.2), "timeout")
 			if changed_stats[member]:
+				if !audioManager.overworld_battle_music:
+					audioManager.pause_music_player_by_name(audioManager.CHANNELS.OVERWORLD)
 				audio_players_names.append_array(_set_lvl_up_music(member))
 			var battle_dialogue_box = yield(uiManager.open_battle_dialogue_box(), "completed")
 			var dialog := _set_lvlup_or_new_skill_dialogue(battle_dialogue_box, member, changed_stats[member], learned_skills[member])
@@ -673,33 +676,34 @@ func _try_party_level_up(changed_stats := {}, learned_skills := {}):
 	
 	if !audio_players_names.empty():
 		for player_name in audio_players_names:
-			audioManager.remove_audio_player_by_name(player_name)
+			audioManager.stop_music_player_by_name(player_name)
 		
 		# Resume overworld music with a fade
-		if audioManager.get_audio_player(0) != null:
-			if audioManager.get_audio_player(0).stream_paused:
-				audioManager.music_fadein(0, audioManager.get_audio_player(0).volume_db, 1)
-		audioManager.resume_all_music()
+		var overworld_music_player = audioManager.get_music_player_by_name(audioManager.CHANNELS.OVERWORLD)
+		if overworld_music_player and overworld_music_player.stream_paused:
+			audioManager.fadein_music_player_by_name(audioManager.CHANNELS.OVERWORLD, overworld_music_player.volume_db, 1)
+		audioManager.resume_music_player_by_name(audioManager.CHANNELS.OVERWORLD)
 	
 	if started_dialog_sequence:
 		get_player().unpause()
 
 func _set_lvl_up_music(member_name: String) -> Array:
-	if audioManager.overworldBattleMusic:
+	if audioManager.overworld_battle_music:
 		return []
 	var audio_player_names := []
-	if !audioManager.is_playing("You Win/LVLUP.mp3"):
-		audioManager.pause_all_music()
-		audioManager.add_audio_player()
-		audioManager.play_music_on_latest_player("", "You Win/LVLUP.mp3")
-		audio_player_names.append(audioManager.get_audio_player_name())
+	var lvlup_music = "You Win/LVLUP.mp3"
+	if !audioManager.is_song_playing_on_music_player_by_name(audioManager.CHANNELS.BATTLE, lvlup_music):
+		audio_player_names.append(audioManager.CHANNELS.BATTLE)
+	audioManager.play_music(audioManager.CHANNELS.BATTLE, lvlup_music)
 	
-	var start_time = audioManager.get_audio_player_from_song("You Win/LVLUP.mp3").get_playback_position()
+	var member_audio_player_name = "Lvlup_" + member_name
+	var audio_player = audioManager.get_music_player_by_name(member_audio_player_name)
 	var mem_lvlup_music = "You Win/LVLUP_%s.mp3" % member_name
-	if !audioManager.is_playing(mem_lvlup_music):
-		audioManager.add_audio_player()
-		audioManager.play_music_on_latest_player("", mem_lvlup_music, start_time)
-		audio_player_names.append(audioManager.get_audio_player_name())
+	
+	if !audioManager.is_song_playing_on_music_player_by_name(member_audio_player_name, mem_lvlup_music):
+		audio_player_names.append(member_audio_player_name)
+	var start_time = audioManager.get_music_player_by_name(audioManager.CHANNELS.BATTLE).get_playback_position()
+	audioManager.play_music(member_audio_player_name, mem_lvlup_music, start_time)
 	return audio_player_names
 
 func _set_lvlup_or_new_skill_dialogue(battle_dialogue_box, member_name: String, changed_stats := {}, learned_skills := []) -> Dictionary:

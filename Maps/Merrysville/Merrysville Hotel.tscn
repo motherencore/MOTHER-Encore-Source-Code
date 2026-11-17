@@ -235,7 +235,7 @@ shape = SubResource( 4 )
 
 [node name="MusicArea" parent="." instance=ExtResource( 4 )]
 visible = false
-music = "Hotel.mp3"
+loop = "Hotel.mp3"
 disappear_flag = "good_morning"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MusicArea"]

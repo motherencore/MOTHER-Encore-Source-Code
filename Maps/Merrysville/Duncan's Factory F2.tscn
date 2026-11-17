@@ -2096,7 +2096,7 @@ shape = SubResource( 27 )
 [node name="MusicArea5" parent="." instance=ExtResource( 23 )]
 visible = false
 position = Vector2( -72, -1016 )
-loop = "wind.mp3"
+loop = "Wind.mp3"
 volume_db = -10
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MusicArea5"]

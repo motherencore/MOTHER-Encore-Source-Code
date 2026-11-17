@@ -152,6 +152,7 @@ script = ExtResource( 5 )
 [node name="Door" parent="Objects" instance=ExtResource( 1 )]
 position = Vector2( 344, 5 )
 dir = Vector2( 0, 1 )
+fadeout_music_on_scene_change = false
 targetScene = "Title screen"
 unpause_player = false
 

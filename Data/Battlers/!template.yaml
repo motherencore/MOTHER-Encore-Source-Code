@@ -1,5 +1,5 @@
 name: TEST_NAME
-nickname: '[Teddy]'
+nickname: "[Teddy]"
 description: Enemy Description.
 article: Enemy article(s)
 maxhp: 100
@@ -30,7 +30,6 @@ battlescript: podunk/enemyphasesanddialog
 boss: false
 sprite: TEST
 music: Awesome Battle Music Loop.mp3
-musicintro: Awesome Battle Music Intro.mp3
 bg: lamp
 ov:
   sprite: MookOV

@@ -11,6 +11,8 @@ enum MenuOptions {
 	LOOP_DOWN
 }
 
+const TITLE_SONG := "Mother Earth.mp3"
+
 onready var _anim_player = $CanvasLayer/AnimationPlayer
 onready var _label = $CanvasLayer/Aboveground/Base/IntroTexts/Label
 onready var _press_button = $CanvasLayer/Title/PressButton
@@ -27,9 +29,9 @@ func _ready():
 	_label.text = "TITLE_INTRO_1"
 	
 	$CanvasLayer/Title/Earth.playing = true
-	if audioManager.get_audio_player(audioManager.get_latest_audio_player_index()).stream != load("res://Audio/Music/Mother Earth.mp3"):
-		audioManager.clear_all_music()
-		audioManager.play_music_on_latest_player("", "Mother Earth.mp3")
+	if !audioManager.is_song_playing_on_music_player_by_name(audioManager.CHANNELS.MENU, TITLE_SONG):
+		audioManager.stop_all_music_players()
+		audioManager.play_music(audioManager.CHANNELS.MENU, TITLE_SONG)
 		_anim_player.play("intro1")
 		_can_skip = true
 	else:
@@ -67,7 +69,7 @@ func _input(event: InputEvent):
 	if OS.is_debug_build():
 		if _is_active:
 			if event.is_action_pressed("ui_cancel") or event.is_action_pressed("ui_toggle"):
-				audioManager.fadeout_all_music(1)
+				audioManager.fadeout_all_music_players(1)
 				Input.action_release("ui_cancel")
 				Input.action_release("ui_toggle")
 				$Objects/DoorToDebug.enter()
@@ -90,7 +92,7 @@ func _physics_process(_delta):
 			_is_active = false
 			match(option):
 				MenuOptions.NEW_GAME:
-					audioManager.fadeout_all_music(0.5)
+					audioManager.fadeout_all_music_players(0.5)
 					set_saveFile()
 					global.load_new_game()
 					$Objects/DoorToNewGame.enter()

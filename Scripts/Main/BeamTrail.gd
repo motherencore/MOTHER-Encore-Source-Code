@@ -11,7 +11,7 @@ func _ready():
 	global_position = Vector2.ZERO
 	global_rotation = 0
 
-func _process(_delta):
+func _physics_process(_delta):
 	global_position = Vector2.ZERO
 	global_rotation = 0
 	if !laser.gone:

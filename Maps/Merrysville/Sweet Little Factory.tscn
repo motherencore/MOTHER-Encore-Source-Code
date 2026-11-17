@@ -292,7 +292,7 @@ extents = Vector2( 160, 112 )
 extents = Vector2( 176, 128 )
 
 [sub_resource type="RectangleShape2D" id=30]
-extents = Vector2( 1110.5, 124.25 )
+extents = Vector2( 1132.5, 139 )
 
 [sub_resource type="RectangleShape2D" id=31]
 extents = Vector2( 64, 24 )
@@ -1521,14 +1521,13 @@ scale = Vector2( 4, 1 )
 position = Vector2( -6, -152 )
 
 [node name="MusicArea" parent="." instance=ExtResource( 38 )]
-visible = false
 position = Vector2( 24, -601 )
 scale = Vector2( 1, 4 )
 loop = "Sweet Little Factory.mp3"
 appear_flag = "rat_king_1"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MusicArea"]
-position = Vector2( -109.5, 31.25 )
+position = Vector2( -131.5, 37.25 )
 shape = SubResource( 30 )
 
 [node name="MusicArea2" parent="." instance=ExtResource( 38 )]

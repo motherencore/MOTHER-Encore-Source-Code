@@ -27,6 +27,7 @@ _always_visible = true
 [node name="Door" parent="Objects/OptionsUI" instance=ExtResource( 2 )]
 position = Vector2( 344, 5 )
 dir = Vector2( 0, 1 )
+fadeout_music_on_scene_change = false
 targetScene = "Title screen"
 unpause_player = false
 

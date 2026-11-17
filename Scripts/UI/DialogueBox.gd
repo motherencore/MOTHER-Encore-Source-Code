@@ -305,29 +305,22 @@ func _handle_phrase() -> void:
 	
 	# ovbattlemusic: bool # Sets the battle theme to the current overworld theme 
 	if _curr_phrase.has("ovbattlemusic"):
-		audioManager.overworldBattleMusic = _curr_phrase["ovbattlemusic"]
+		audioManager.overworld_battle_music = _curr_phrase["ovbattlemusic"]
 	
 	# music: String # Plays a song
-	# musicloop: String # The looping section of a song (No longer used since godot music files handle loops themselves)
-	if _curr_phrase.has("musicloop"):
-		var music = ""
-		if _curr_phrase.has("music"):
-			music = _curr_phrase["music"]
-		if audioManager.get_audio_player(0).playing:
-			audioManager.add_audio_player()
-		audioManager.play_music_on_latest_player(music, _curr_phrase["musicloop"])
-	elif _curr_phrase.has("music"):
+	if _curr_phrase.has("music"):
+		
 		if _curr_phrase["music"] != "":
-			if audioManager.get_audio_player(0).playing:
-				audioManager.add_audio_player()
-			audioManager.play_music_on_latest_player(_curr_phrase["music"], "")
+			audioManager.play_music(audioManager.CHANNELS.CUTSCENE, _curr_phrase["music"])
 		else:
-			audioManager.music_fadeout(0, 2)
+			var channel = audioManager.CHANNELS.CUTSCENE if audioManager.get_music_player_by_name(audioManager.CHANNELS.CUTSCENE).playing else audioManager.CHANNELS.OVERWORLD
+			audioManager.fadeout_music_player_by_name(channel, 2)
 	
 	# musicvolume: float # Sets the music's volume to a certain db level
 	if _curr_phrase.has("musicvolume"):
 		yield(get_tree(), "idle_frame")
-		audioManager.music_fadeto(0, _curr_phrase["musicvolume"])
+		var channel = audioManager.CHANNELS.CUTSCENE if audioManager.get_music_player_by_name(audioManager.CHANNELS.CUTSCENE).playing else audioManager.CHANNELS.OVERWORLD
+		audioManager.fadeto_music_player_by_name(channel, _curr_phrase["musicvolume"])
 	
 	# sound: String # The sound effect that plays when a character is printed in the dialog box
 	# Can either be Adult, Female, Kid, Robot, Shy or Strange

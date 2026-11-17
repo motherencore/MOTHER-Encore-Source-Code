@@ -46,7 +46,7 @@ var exitCount = 0
 var thePosition
 
 func _ready():
-	audioManager.stop_all_music()
+	audioManager.stop_all_music_players()
 	exitCount = 0
 	firstAppearance = true
 	modulate = Color.transparent
@@ -187,7 +187,7 @@ func _on_interact_body_entered(body):
 			$interact/CollisionShape2D.set_deferred("disabled", true)
 			chase_stop()
 			global.get_player().game_over()
-			audioManager.stop_all_music()
+			audioManager.stop_all_music_players()
 			OS.shell_open("https://static.wikia.nocookie.net/rfti/images/6/65/Wega.png/revision/latest?cb=20230213144525")
 
 func _on_Hurtbox_area_entered(area):
@@ -216,7 +216,7 @@ func _on_Hurtbox_area_entered(area):
 			$DamageAnimation.play("Flash")
 			yield($DamageAnimation,"animation_finished")
 			#if startingHP <= 0:
-			#	audioManager.stop_all_music()
+			#	audioManager.stop_all_music_players()
 			#	get_parent().remove_child(self)
 		elif area.get_collision_layer_bit(2) == true:
 			#lloyd stun gun
@@ -232,7 +232,7 @@ func _on_screen_exited():
 	start_pos = thePosition
 	exitCount += 1
 	if exitCount == 5:
-		audioManager.stop_all_music()
+		audioManager.stop_all_music_players()
 		get_parent().remove_child(self)
 
 func activate():
@@ -245,7 +245,7 @@ func activate():
 func _on_Enemy_tree_exiting():
 	exitCount += 1
 	if exitCount == 5:
-		audioManager.stop_all_music()
+		audioManager.stop_all_music_players()
 		get_parent().remove_child(self)
 
 func _on_SpawnArea_body_exited(body):

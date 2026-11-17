@@ -191,7 +191,7 @@
   goto: "11"
 "11":
   objectsfunction:
-    Music/MusicArea12: stop_music
+    Music/MusicArea12: stop_music_immediately
     melodyBG: appear
   wait: 4
   autoadvance: true

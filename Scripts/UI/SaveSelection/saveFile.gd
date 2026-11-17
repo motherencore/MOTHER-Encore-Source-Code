@@ -108,7 +108,7 @@ func load_data(num: int) -> void:
 func load_game() -> void:
 	_arrow.on = false
 	uiManager.get_fade().fade_in("Fade", Color.black, 1)
-	audioManager.fadeout_all_music(0.5)
+	audioManager.fadeout_all_music_players(0.5)
 	yield(uiManager.get_fade(), "fade_in_done")
 	globaldata.save_file = _file_num
 	global.save_settings()

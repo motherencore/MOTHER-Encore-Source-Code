@@ -770,6 +770,7 @@ targetX = 520
 targetY = 400
 dir = Vector2( 0, 1 )
 fade_in_speed = 0.4
+fadeout_music_on_scene_change = false
 targetScene = "Cutscenes/Introduction"
 unpause_player = false
 

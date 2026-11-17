@@ -1024,7 +1024,7 @@ _player_map_offset = Vector2( 98, 132 )
 _region_name = "Podunk"
 
 [node name="DebugStartPos" parent="." instance=ExtResource( 38 )]
-position = Vector2( -48, 1696 )
+position = Vector2( 424, 1864 )
 z_index = 1
 
 [node name="Ground" type="TileMap" parent="."]
@@ -6107,6 +6107,7 @@ position = Vector2( -128, 1831 )
 scale = Vector2( 4, 1 )
 targetY = 16
 dir = Vector2( 0, -1 )
+end_sound = "Door_Short.mp3"
 transit_in_anim = "Circle Focus"
 transit_out_anim = "Circle Focus"
 targetScene = "podunk/Burger Shop"
@@ -6119,13 +6120,15 @@ dir = Vector2( 0, 1 )
 transit_in_anim = "Circle Focus"
 transit_out_anim = "Circle Focus"
 fadeout_music_on_scene_change = false
+fadeout_music_length = 0.4
 targetScene = "podunk/Catacombs"
 
-[node name="ToCatacombs2" parent="Objects/Doors" instance=ExtResource( 1 )]
+[node name="Church" parent="Objects/Doors" instance=ExtResource( 1 )]
 position = Vector2( 60, 4480 )
 scale = Vector2( 3, 1 )
 targetY = 16
 dir = Vector2( 0, -1 )
+end_sound = "Door_Short.mp3"
 transit_in_anim = "Circle Focus"
 transit_out_anim = "Circle Focus"
 targetScene = "podunk/Church"
@@ -6162,6 +6165,7 @@ scale = Vector2( 4, 1 )
 targetX = -8
 targetY = 16
 dir = Vector2( 0, -1 )
+end_sound = "Door_Short.mp3"
 transit_in_anim = "Circle Focus"
 transit_out_anim = "Circle Focus"
 targetScene = "podunk/Zoo Office"
@@ -7595,6 +7599,7 @@ position = Vector2( -1232, -304 )
 sprite = "CanaryChick/main"
 dialog = "Podunk/canary_speechless"
 _thoughts = "Podunk/canary_chick_thoughts"
+disappear_flag = "canary_melody"
 _all_dialog = [ PoolStringArray( "canary_melody", "Podunk/canary_sing" ) ]
 initial_dir = Vector2( 0, 1 )
 wander = true
@@ -8646,7 +8651,6 @@ sprite = "Npcs/4dir/minnie"
 staring = true
 
 [node name="Music" type="Node2D" parent="."]
-visible = false
 
 [node name="MusicArea" parent="Music" instance=ExtResource( 6 )]
 position = Vector2( 368, 1053 )
@@ -8661,7 +8665,7 @@ loop = "Pollyanna.ogg"
 volume_db = -8
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Music/MusicArea3"]
-polygon = PoolVector2Array( -220, -86, -220, 194, 20, 194, 20, -213, -188, -213 )
+polygon = PoolVector2Array( -220, -86, -220, -30, -268, 18, -268, 186, 20, 194, 20, -213, -188, -213 )
 
 [node name="MusicArea5" parent="Music" instance=ExtResource( 6 )]
 position = Vector2( -484, 526 )

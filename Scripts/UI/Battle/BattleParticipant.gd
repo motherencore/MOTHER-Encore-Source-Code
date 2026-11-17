@@ -339,7 +339,7 @@ func defeat(silent := false):
 	refresh_status_info()
 	emit_signal("defeated", self, silent)
 	if is_boss() and !silent:
-		audioManager.pause_all_music()
+		audioManager.pause_all_music_players()
 		yield(_battle_sprite, "start_boss_defeat_flash")
 		emit_signal("start_boss_defeat_flash", get_battle_sprite_center())
 

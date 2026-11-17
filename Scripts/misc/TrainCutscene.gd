@@ -99,7 +99,7 @@ func _close(goto_scene := ""):
 		_node_door.targetScene = DESTINATION_SCENES[_get_current_theme()]
 		_node_door.enter()
 		yield(_node_door, "entered")
-	audioManager.stop_all_music()
+	audioManager.stop_all_music_players()
 #	global.get_player().show()
 	global.currentCamera.current = true
 	global.currentCamera.anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER

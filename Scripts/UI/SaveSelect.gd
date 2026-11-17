@@ -54,7 +54,7 @@ func _ready():
 		save_file.connect("show_buttonPrompts", self, "show_buttonPrompts_setting")
 	if _is_embed:
 		$Background.hide()
-		audioManager.music_muffle(0, 1)
+		audioManager.muffle_music_player_by_name(audioManager.CHANNELS.OVERWORLD, 1)
 		$CanvasLayer/Body.margin_left = 32
 		$CanvasLayer/Body.margin_right = -32
 	_saves_container.rect_position.y = _saves_offset - (_index - 1) * 76
@@ -175,7 +175,7 @@ func _finish():
 		$Objects/Door.enter()
 
 func close():
-	audioManager.music_muffle(0, 0)
+	audioManager.muffle_music_player_by_name(audioManager.CHANNELS.OVERWORLD, 0)
 	if _callback and _callback.is_valid():
 		_callback.call_func()
 		_callback = null

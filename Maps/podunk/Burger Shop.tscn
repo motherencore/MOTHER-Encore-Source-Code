@@ -219,6 +219,7 @@ scale = Vector2( 4, 1 )
 targetX = -112
 targetY = 1848
 dir = Vector2( 0, 1 )
+sound = "M3/door_open.wav"
 transit_in_anim = "Circle Focus"
 transit_out_anim = "Circle Focus"
 targetScene = "podunk/podunk"

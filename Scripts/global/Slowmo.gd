@@ -26,7 +26,7 @@ func _process(delta):
 		set_process(false)
 		value = endValue
 	Engine.time_scale = value
-	if with_pitch: audioManager.set_audio_pitch(value)
+	if with_pitch: audioManager.set_sfx_audio_pitch(value)
 
 func circl_ease_in(t, b, c, d):
 	t /= d

@@ -1,16 +1,25 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Scripts/global/audioManager.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/UI/debugmenu/MusicPlayerLabels.gd" type="Script" id=2]
 
 [node name="audioManager" type="Control"]
 margin_right = 40.0
 margin_bottom = 40.0
 script = ExtResource( 1 )
 
-[node name="AudioPlayers" type="Control" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+[node name="MusicPlayers" type="Node" parent="."]
 
 [node name="Sfx" type="Node" parent="."]
 
-[node name="Tween" type="Tween" parent="."]
+[node name="MusicPlayerCanvas" type="CanvasLayer" parent="."]
+layer = 128
+
+[node name="MusicPlayerLabels" type="VBoxContainer" parent="MusicPlayerCanvas"]
+visible = false
+anchor_bottom = 1.0
+margin_left = 12.0
+margin_top = 8.0
+margin_right = 244.0
+margin_bottom = -12.0
+script = ExtResource( 2 )

@@ -18,7 +18,6 @@ var _blacklisted_names = tr("BLACKLISTED_NAMES").split(",")
 var _current_step: int = 0
 var _input_text := ""
 var _current_settings_panel: Control = null
-var _music_id: int
 var _callback: FuncRef = funcref(self, "_default_callback")
 var _tween: SceneTreeTween
 var _highlight_tween: SceneTreeTween
@@ -88,12 +87,10 @@ func _ready():
 	
 	if naming_sequence.has("bgm"):
 		if _embed_mode:
-			audioManager.pause_all_music()
+			audioManager.pause_all_music_players()
 		
-		audioManager.add_audio_player()
-		_music_id = audioManager.get_latest_audio_player_index()
-		audioManager.play_music("", naming_sequence.bgm, _music_id)
-		audioManager.set_audio_player_volume(_music_id, 8)
+		audioManager.play_music(audioManager.CHANNELS.MENU, naming_sequence.bgm)
+		audioManager.set_music_player_volume_by_name(audioManager.CHANNELS.MENU, 8)
 	
 	_refresh_keys()
 	
@@ -512,8 +509,8 @@ func _save_new_names():
 
 func _finish(completed: bool):
 	if _embed_mode:
-		audioManager.stop_audio_player(_music_id)
-		audioManager.resume_all_music()
+		audioManager.stop_music_player_by_name(audioManager.CHANNELS.MENU)
+		audioManager.resume_music_player_by_name(audioManager.CHANNELS.OVERWORLD)
 		uiManager.remove_ui(self)
 		queue_free()
 	else:
@@ -527,7 +524,7 @@ func _default_callback(completed: bool):
 	if completed:
 		$Objects/DoorToIntro.enter()
 	else:
-		audioManager.stop_all_music()
+		audioManager.stop_all_music_players()
 		$Objects/DoorToTitle.enter()
 
 func _on_arrow_selected(cursor_index: int):

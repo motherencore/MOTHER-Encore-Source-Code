@@ -13,7 +13,7 @@ func _init():
 	uiManager.clear_on_screen_enemies()
 
 func _ready():
-	turn_off_music_changers()
+	audioManager.clear_previous_overworld_track_playback_positions()
 	global.get_player().set_collisions(false)
 	global.get_player().set_idle()
 	globaldata.cash /= 2
@@ -25,8 +25,8 @@ func _ready():
 	$GameOverLayer/ColorRect.modulate = Color.black
 	yield($Timer, "timeout")
 	$AnimationPlayer.play("nintenFall")
-	audioManager.clear_all_music()
-	_game_over_music = audioManager.play_music_on_latest_player("", "Game_Over.ogg")
+	audioManager.stop_all_music_players()
+	_game_over_music = audioManager.play_music(audioManager.CHANNELS.MENU, "Game_Over.ogg")
 	yield($AnimationPlayer, "animation_finished")
 	
 	var dialogueBox = uiManager.open_dialogue_box(GAME_OVER_DIALOG, funcref(self, "_end_dialogue"))
@@ -35,11 +35,10 @@ func _remove_fade_cut():
 	_fade.set_cut(1, 0)
 
 func _end_dialogue(try_again: int):
-	if _game_over_music: audioManager.music_fadeout_obj(_game_over_music, 5)
+	if _game_over_music: audioManager.fadeout_music_player_by_name(audioManager.CHANNELS.MENU, 5)
 	if try_again:
 		$AnimationPlayer.play("nintenGetup")
 		yield($AnimationPlayer, "animation_finished")
-		audioManager.clear_all_music()
 		$AnimationPlayer.play("transitionOut")
 		_fade.fade_in("Fade", Color.white, 0.3)
 		yield($AnimationPlayer, "animation_finished")
@@ -57,16 +56,11 @@ func _end_dialogue(try_again: int):
 		$AnimationPlayer.play("transitionOut")
 		_fade.fade_in("Fade", Color.black, 0.2)
 		yield($AnimationPlayer, "animation_finished")
-		audioManager.clear_all_music()
 		$GameOverLayer.hide()
 		$Door.enter()
 		yield($Door, "done")
 	_game_over_music = null
 	emit_signal("done")
-		
-func turn_off_music_changers():
-	for musicChanger in audioManager.musicChangers:
-		musicChanger.stop_music_immediately()
 
 func revive_party():
 	global.set_party_leader(PartyMember.NINTEN)

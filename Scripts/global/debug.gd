@@ -1,6 +1,7 @@
 extends Node
 
 signal stat_state_updated(state)
+signal music_player_labels_toggled
 
 var stat_state = 4
 
@@ -28,6 +29,8 @@ func _input(event):
 	elif event.is_action_released("ui_j"):
 		Engine.time_scale = 1.0
 	
+	if event.is_action_pressed("ui_show_audio"):
+		emit_signal("music_player_labels_toggled")
 	
 	if uiManager.is_stack_empty() and !uiManager.is_in_battle():
 		if !global.get_player().is_paused():
@@ -51,12 +54,12 @@ func _input(event):
 		
 		# Reload most recent save file
 		if event.is_action_pressed("ui_F10", true):
-			audioManager.fadeout_all_music(0.5)
+			audioManager.fadeout_all_music_players(0.5)
 			global.load_game(globaldata.save_file)
 		
 		# Instantly new game
 		if event.is_action_pressed("ui_F11", true):
-			audioManager.fadeout_all_music(0.5)
+			audioManager.fadeout_all_music_players(0.5)
 			global.load_new_game(true, true)
 		
 		# Go to debug world
@@ -154,4 +157,4 @@ func _input(event):
 	
 	# Mute music
 	if event.is_action_pressed("ui_mute"):
-		audioManager.stop_all_music()
+		audioManager.stop_all_music_players()

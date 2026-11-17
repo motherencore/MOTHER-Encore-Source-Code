@@ -997,8 +997,17 @@ shape = SubResource( 16 )
 
 [node name="MusicArea" parent="." instance=ExtResource( 14 )]
 loop = "Twinkle_Elementary.mp3"
+appear_flag = "lloyd_befriended"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MusicArea"]
+position = Vector2( 184, -512 )
+shape = SubResource( 14 )
+
+[node name="MusicArea2" parent="." instance=ExtResource( 14 )]
+loop = "Twinkle_Elementary.mp3"
+disappear_flag = "rat_king_defeat"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MusicArea2"]
 position = Vector2( 184, -512 )
 shape = SubResource( 14 )
 
@@ -1006,11 +1015,6 @@ shape = SubResource( 14 )
 layer = 100
 
 [node name="ScreenExplosion" parent="CanvasLayer" instance=ExtResource( 15 )]
-
-[node name="ColorRect" parent="CanvasLayer/ScreenExplosion" index="0"]
-margin_top = 0.0
-margin_right = 0.0
-margin_bottom = 0.0
 
 [node name="CutscenePlayer" type="AnimationPlayer" parent="."]
 anims/Explosion = SubResource( 10 )

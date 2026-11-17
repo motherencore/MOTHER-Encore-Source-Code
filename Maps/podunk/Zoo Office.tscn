@@ -477,6 +477,7 @@ scale = Vector2( 6, 1 )
 targetX = 912
 targetY = -896
 dir = Vector2( 0, 1 )
+sound = "M3/door_open.wav"
 targetScene = "podunk/podunk"
 
 [node name="Door9" parent="Objects/Flag Landmark/Doors" instance=ExtResource( 2 )]

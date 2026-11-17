@@ -27,18 +27,24 @@ const ORBS_PULSE_DELAY := -0.02
 const ORBS_POS_SYNC_FACTOR := 0.1
 const ORBS_TRANSITION_DELAY := 0.2
 
+const INTRO_PLAYER_NAME: String = "OcarinaIntro"
+const DRUMS_PLAYER_NAME: String = "OcarinaDrums"
+const MELODY_PLAYER_NAME: String = "OcarinaMelody_"
+
 export (Array, NodePath) var _melody_anim_nodes: Array
 export (NodePath) onready var _playing_orbs = get_node(_playing_orbs) as Control
 
 onready var BackgroundRes := load("res://Graphics/Battle BGS/ocarina.bbg")
 
 var _close_cb: FuncRef
-var _curr_melody_player_id: String
-var _drums_player_id: String
 var _curr_melody_num := -1
+
+var _drums_player_name = INTRO_PLAYER_NAME
 
 var _note_to_play := 0 # array index
 var _last_note_pos := 0.0 # in number of beats
+
+var closing = false
 
 func init(close_cb: FuncRef):
 	_close_cb = close_cb
@@ -46,7 +52,7 @@ func init(close_cb: FuncRef):
 func _ready():
 	_init_background()
 	_init_melody_nodes()
-	audioManager.pause_all_music()
+	audioManager.pause_all_music_players()
 	_start_playing_with_intro()
 
 func _init_background():
@@ -63,18 +69,22 @@ func _init_melody_nodes():
 		_melody_anim_nodes[i].init_melody(is_obtained)
 
 func _start_playing_with_intro():
-	_drums_player_id = _create_audio_player(INTRO_DRUMS_FILE)
+	_play_music(INTRO_PLAYER_NAME, INTRO_DRUMS_FILE)
+	_drums_player_name = INTRO_PLAYER_NAME
 
-func _process(delta: float):
-	var melody_playback_pos := audioManager.get_playback_position_by_name(_drums_player_id) as float
+func _physics_process(delta):
+	var melody_playback_pos := audioManager.get_music_player_playback_position_by_name(_drums_player_name) as float
 	if _curr_melody_num >= 0 and _curr_melody_num < NOTES_SEQUENCE.size():
 		_handle_melody_notes(melody_playback_pos)
 	_handle_playing_orbs(melody_playback_pos)
-	if melody_playback_pos > MELODY_DURATION and _curr_melody_num < MELODY_FLAGS.size():
+	if melody_playback_pos > MELODY_DURATION and _curr_melody_num < MELODY_FLAGS.size() and !closing:
 		_on_melody_finished()
 
 func _input(event):
 	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("ui_accept"):
+		closing = true
+		for name in _get_ocarina_music_player_names():
+			audioManager.fadeout_music_player_by_name(name)
 		Input.action_release("ui_accept")
 		Input.action_release("ui_cancel")
 		get_tree().set_input_as_handled()
@@ -87,16 +97,15 @@ func _play_melody():
 	_note_to_play = 0
 	var got_melody := _is_melody_obtained(_curr_melody_num)
 	if got_melody:
-		_curr_melody_player_id = _create_audio_player(MELODIES_FILE_PATTERN % (_curr_melody_num + 1))
-	_drums_player_id = _create_audio_player(DRUMS_FILE)
+		_play_music(MELODY_PLAYER_NAME + str(_curr_melody_num), MELODIES_FILE_PATTERN % (_curr_melody_num + 1))
+	_play_music(DRUMS_PLAYER_NAME, DRUMS_FILE)
+	_drums_player_name = DRUMS_PLAYER_NAME
 	_play_stop_anim(_curr_melody_num, true)
 
-func _create_audio_player(music: String):
-	audioManager.add_audio_player()
-	var player_id: int = audioManager.get_latest_audio_player_index()
-	audioManager.set_audio_player_volume(player_id, PLAYER_VOLUME)
-	audioManager.play_music(music, "", player_id)
-	return audioManager.get_audio_player_name(player_id)
+func _play_music(node_name: String, music: String):
+	audioManager.stop_music_player_by_name(node_name)
+	audioManager.play_music(node_name, music, 0.0)
+	audioManager.set_music_player_volume_by_name(node_name, PLAYER_VOLUME)
 
 func _handle_melody_notes(melody_pos: float):
 	if _is_melody_obtained(_curr_melody_num):
@@ -145,10 +154,15 @@ func _play_stop_anim(index: int, play: bool):
 		anim_node.stop()
 
 func close():
-	audioManager.stop_audio_player_by_name(_drums_player_id)
-	audioManager.stop_audio_player_by_name(_curr_melody_player_id)
-	audioManager.resume_all_music()
+	audioManager.resume_music_player_by_name(audioManager.CHANNELS.OVERWORLD)
 	if _close_cb and _close_cb.is_valid():
 		_close_cb.call_func()
 		_close_cb = null
 	queue_free()
+
+func _get_ocarina_music_player_names() -> Array:
+	var list = []
+	list.append_array([INTRO_PLAYER_NAME, DRUMS_PLAYER_NAME])
+	for i in MELODY_FLAGS.size():
+		list.append(MELODY_PLAYER_NAME + str(i))
+	return list

@@ -31,5 +31,6 @@ T: Cycle language
 G: x2 Game Speed
 H: x4 Game Speed
 J: x0.2 Game Speed
+N: Show music players
 M: Mute music
 

@@ -642,6 +642,7 @@ dir = Vector2( 0, -1 )
 transit_in_anim = "Circle Focus"
 transit_out_anim = "Circle Focus"
 fadeout_music_on_scene_change = false
+fadeout_music_length = 0.4
 targetScene = "podunk/podunk"
 
 [node name="Door15" parent="Objects/Doors" instance=ExtResource( 2 )]
@@ -1456,7 +1457,6 @@ shape = SubResource( 2 )
 wait_time = 1.5
 
 [node name="Music" type="Node2D" parent="."]
-visible = false
 
 [node name="MusicArea" parent="Music" instance=ExtResource( 16 )]
 position = Vector2( -1168, -800 )
@@ -1481,7 +1481,7 @@ shape = SubResource( 31 )
 position = Vector2( -1184, -800 )
 loop = "A_Ghastly_Site.mp3"
 disappear_flag = "hidden_entrance_opened"
-volume_db = -5
+volume_db = -8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Music/MusicArea2"]
 position = Vector2( 1144, 912 )

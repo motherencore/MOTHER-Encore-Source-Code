@@ -576,6 +576,7 @@ margin_bottom = 107.0
 [node name="Door" parent="OptionsMenu" instance=ExtResource( 12 )]
 position = Vector2( 328, 0 )
 collision_layer = 0
+fadeout_music_on_scene_change = false
 targetScene = "Title screen"
 unpause_player = false
 show_player_after_warp = false

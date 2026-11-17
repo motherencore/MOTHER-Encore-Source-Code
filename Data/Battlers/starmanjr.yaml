@@ -25,7 +25,6 @@ battlescript: starmanjr
 boss: true
 sprite: starman jr
 music: Rising Star.ogg
-musicintro: ""
 bg: starmanjr
 affinity_multipliers:
   blinded: 2

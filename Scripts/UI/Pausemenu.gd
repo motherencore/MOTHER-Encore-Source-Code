@@ -22,7 +22,7 @@ func open():
 	uiManager.info_plates_show()
 	audioManager.play_sfx_by_name("menu_open2", "menu_open")
 	uiManager.toggle_black_bars(true)
-	audioManager.music_muffle(0, 1)
+	audioManager.muffle_music_player_by_name(audioManager.CHANNELS.OVERWORLD, 1)
 	yield(_animation_player, "animation_finished")
 	if _active:
 		_arrow.on = true
@@ -34,13 +34,13 @@ func _input(event: InputEvent):
 
 func _deactivate():
 	_arrow.on = false
-	audioManager.music_muffle(0, 2)
+	audioManager.muffle_music_player_by_name(audioManager.CHANNELS.OVERWORLD, 2)
 	_active = false
 	uiManager.close_key_indicator()
 
 func _activate():
 	_arrow.on = true
-	audioManager.music_muffle(0, 1)
+	audioManager.muffle_music_player_by_name(audioManager.CHANNELS.OVERWORLD, 1)
 	_active = true
 	uiManager.info_plates_show()
 	uiManager.update_key_indicator()
@@ -88,7 +88,7 @@ func close(flags: int = 0, called_from_ui_manager := false):
 		_close_view(flags & CloseFlags.SILENT, flags & CloseFlags.HIDE_BARS)
 		yield(_animation_player, "animation_finished")
 		_arrow.set_cursor_from_index(0, false)
-		audioManager.music_muffle(0, 0)
+		audioManager.muffle_music_player_by_name(audioManager.CHANNELS.OVERWORLD, 0)
 		if !called_from_ui_manager:
 			uiManager.close_commands_menu(!(flags & CloseFlags.UNPAUSE), flags & CloseFlags.HIDE_BARS, flags & CloseFlags.SILENT, true)
 

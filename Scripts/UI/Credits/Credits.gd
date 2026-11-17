@@ -66,10 +66,9 @@ func _refresh_scrolling_amount():
 	scroll_animation.track_set_key_value(0, 2, -scroll_amount)
 
 func play_music():
-	audioManager.stop_all_music()
-	audioManager.add_audio_player()
-	audioManager.play_music_on_latest_player(_credits_music, "")
-	audioManager.set_audio_player_volume(audioManager.get_latest_audio_player_index(), _credits_volume)
+	audioManager.stop_all_music_players()
+	audioManager.play_music(audioManager.CHANNELS.MENU, _credits_music)
+	audioManager.set_music_player_volume_by_name(audioManager.CHANNELS.MENU, _credits_volume)
 
 func _on_AnimationPlayer_animation_finished(anim_name):
 	playing = false
@@ -86,7 +85,7 @@ func _input(event):
 	if event.is_action_pressed("ui_select") and playing:
 		Input.action_release("ui_select")
 		_anim_player.stop()
-		audioManager.fadeout_all_music(1)
+		audioManager.fadeout_all_music_players(1)
 		_door.fade_in_speed = SKIP_FADEIN_SPEED
 		_on_AnimationPlayer_animation_finished("Scroll")
 

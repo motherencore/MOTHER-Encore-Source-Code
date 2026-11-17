@@ -5,6 +5,7 @@ func goto_scene(path: String, player_pos := Vector2.ZERO, player_dir := Vector2(
 	call_deferred("_deferred_goto_scene", path, player_pos, player_dir, params)
 
 func _deferred_goto_scene(path: String, player_pos: Vector2, player_dir: Vector2, params: Array):
+	global.changing_scenes = true
 	global.get_current_scene_player_node().remove_child(global.get_player())
 	global.get_player().set_collisions(false)
 	
@@ -41,13 +42,14 @@ func _deferred_goto_scene(path: String, player_pos: Vector2, player_dir: Vector2
 	
 	global.get_player().set_collisions(true)
 	global.emit_signal("scene_changed")
+	global.changing_scenes = false
 
 func start_door_transition(door: Door, player: PartyMemberPlayer):
 	var same_scene: bool = !door.targetScene or global.currentScene.get_name() == door.targetScene
 	
 	if !same_scene and door.fadeout_music_on_scene_change:
-		for music_changer in audioManager.musicChangers:
-			music_changer.stop_music(door.fadeout_music_length)
+		audioManager.crossfadeout_overworld_music(door.fadeout_music_length)
+		audioManager.fadeout_all_music_players(door.fadeout_music_length, false)
 	
 	if door.sound and door.sound != "None":
 		door.audio_player.stream = load("res://Audio/Sound effects/" + door.sound)

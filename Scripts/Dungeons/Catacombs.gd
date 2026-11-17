@@ -1,7 +1,7 @@
 extends DungeonAreaRoom
 
 func _on_main_switch_hit():
-	audioManager.music_fadeout(0)
+	audioManager.fadeout_music_player_by_name(audioManager.CHANNELS.OVERWORLD)
 	global.get_player().pause()
 	uiManager.set_cutscene(true)
 

@@ -108,7 +108,6 @@ var _enemies_shaking := false
 var _shake_time := 0.0
 
 var _battle_bg
-var _music_intro := ""
 var _music := ""
 
 # Listed in the strict order for battle (Ninten, Ana, Lloyd, Teddy, Pippi)
@@ -359,7 +358,6 @@ func init_battle_params(enemies_to_join: Array, advantage: int, can_run: bool = 
 		globaldata.set_flag("%s_fought" % enemy_name, true, false)
 		_show_intro_outro = _enemy_BPs[0].character.get_data().get("show_intro_outro", false)
 	
-	_music_intro = _enemy_BPs[0].character.get_data().get("musicintro", "")
 	_music = _enemy_BPs[0].character.get_data().get("music", "")
 	
 	_advantage = advantage
@@ -398,7 +396,7 @@ func _ready():
 	
 	$EncoreTutorial.init(self, _conscious_party, _bg_darkinator)
 	
-	if _music and !audioManager.overworldBattleMusic: audioManager.pause_all_music()
+	if _music and !audioManager.overworld_battle_music: audioManager.pause_all_music_players()
 	for enemy in _enemy_BPs:
 		if enemy.is_boss(): _is_boss = true
 	
@@ -409,10 +407,12 @@ func _ready():
 		"encounter"
 	]
 	
+	if _is_boss: 
+		audioManager.clear_previous_overworld_track_playback_positions()
+	
 	if _advantage == Advantage.ENEMY: $ActionMenuBox.hide()
 	
-	audioManager.add_audio_player()
-	audioManager.play_music_on_latest_player(encounter_sound, "")
+	audioManager.play_music(audioManager.CHANNELS.MENU, encounter_sound)
 	_save_inventories()
 	_check_sp_meter()
 
@@ -421,11 +421,8 @@ func _battle_start(_anim := ""):
 		_npc_BPs[i].add_battle_sprite($NPCs, $NpcTransitions.get_child(i))
 	
 	# Enter "Actions" menu page
-	if _music and !audioManager.overworldBattleMusic:
-		var intro = ""
-		if _music_intro: intro = "Battle Themes/" + _music_intro
-		audioManager.add_audio_player()
-		audioManager.play_music_on_latest_player(intro, "Battle Themes/" + _music)
+	if _music and !audioManager.overworld_battle_music:
+		audioManager.play_music(audioManager.CHANNELS.BATTLE, "Battle Themes/" + _music)
 	if _advantage == Advantage.ENEMY: _curr_party_mem = _party_BPs.size()
 	
 	# Activate statuses if there are any
@@ -2482,10 +2479,9 @@ func _win(): # suspend func
 	if !$Dialoguebox.did_finish(): yield($Dialoguebox, "done")
 	_activate_on_screen_enemies()
 	
-	if !audioManager.overworldBattleMusic or _is_boss:
-		audioManager.pause_all_music()
-		audioManager.add_audio_player()
-		audioManager.play_music_on_latest_player(_musical_effects["youwonboss" if _is_boss else "youwon"], _musical_effects["victory"])
+	if !audioManager.overworld_battle_music or _is_boss:
+		audioManager.play_music(audioManager.CHANNELS.BATTLE, _musical_effects["youwonboss" if _is_boss else "youwon"])
+		audioManager.queue_music(audioManager.CHANNELS.BATTLE, _musical_effects["victory"])
 	
 	_set_bp_end_battle()
 	# Show player battle sprites + victory animation
@@ -2625,16 +2621,11 @@ func _give_cash():
 
 func _level_up_or_learn_skills(bp: BattleParticipant, changed_stats: Dictionary, learned_skills: Array): # suspend func
 	if changed_stats:
-		if !audioManager.overworldBattleMusic or _is_boss:
-			if !audioManager.is_playing(_musical_effects["lvlup"]):
-				audioManager.pause_all_music()
-				audioManager.add_audio_player()
-				audioManager.play_music_on_latest_player("", _musical_effects["lvlup"])
-			var start_time = audioManager.get_audio_player_from_song(_musical_effects["lvlup"]).get_playback_position()
-			var party_mem_level_up = _musical_effects["lvlup_" + bp.character.get_name()]
-			if !audioManager.is_playing(party_mem_level_up):
-				audioManager.add_audio_player()
-				audioManager.play_music_on_latest_player("", party_mem_level_up, start_time)
+		if !audioManager.overworld_battle_music or _is_boss:
+			audioManager.play_music(audioManager.CHANNELS.BATTLE, _musical_effects["lvlup"])
+			var start_time = audioManager.get_music_player_by_name(audioManager.CHANNELS.BATTLE).get_playback_position()
+			var party_mem_level_up_music = _musical_effects["lvlup_" + bp.character.get_name()]
+			audioManager.play_music("Lvlup_" + bp.character.get_name(), party_mem_level_up_music, start_time)
 		
 		var level = bp.character.get_level()
 		$Dialoguebox.append_formatted("BATTLE_MSG_LEVEL_UP", _context.set_actor(bp).set_value(level), "M3/Cheering.mp3")
@@ -2649,15 +2640,14 @@ func _level_up_or_learn_skills(bp: BattleParticipant, changed_stats: Dictionary,
 func _end_battle_to_overworld(battle_result := Result.FLEE, items_to_overworld := []): # suspend func
 	$Dialoguebox/Dialoguebox.hide() # Sorry
 	$ActionMenuBox.hide()
-	if !audioManager.overworldBattleMusic or _is_boss:
+	if !audioManager.overworld_battle_music or _is_boss:
 		_remove_battle_music() # Remove victory and level up tracks
 		
 		# Resume overworld music
-		if audioManager.get_audio_player(0) != null:
-			if audioManager.get_audio_player(0).stream_paused:
-				audioManager.music_fadein(0, audioManager.get_audio_player(0).volume_db, 3)
-	
-	audioManager.resume_all_music()
+		var overworld_music_player = audioManager.get_music_player_by_name(audioManager.CHANNELS.OVERWORLD)
+		if overworld_music_player and overworld_music_player.stream_paused:
+			audioManager.fadein_music_player_by_name(audioManager.CHANNELS.OVERWORLD,overworld_music_player.volume_db, 3)
+			audioManager.resume_music_player_by_name(audioManager.CHANNELS.OVERWORLD)
 	$AnimScene.play("transitionOut")
 	_drop_item_to_overworld(items_to_overworld)
 	
@@ -2678,7 +2668,7 @@ func _end_battle_to_game_over(): # suspend func
 	_active = false
 	$ActionMenuBox.hide()
 	_remove_battle_music()
-	audioManager.pause_all_music()
+	audioManager.stop_all_music_players()
 	
 	if !$Dialoguebox.did_finish(): yield($Dialoguebox, "done")
 	else: yield(get_tree().create_timer(0.5), "timeout")
@@ -2829,17 +2819,15 @@ func _jump_npcs_to_overworld(): # suspend func
 
 func _remove_battle_music():
 	var win_themes_path := "res://Audio/Music/You Win/"
-	for audio_player in audioManager.get_audio_player_list():
-		if audio_player.stream != null and win_themes_path in audio_player.stream.resource_path:
-			audioManager.remove_audio_player(audioManager.get_audio_player_index(audio_player))
-	if _music:
-		if audioManager.is_playing("Battle Themes/" + _music):
-			audioManager.remove_audio_player(audioManager.get_audio_player_index(audioManager.get_audio_player_from_song("Battle Themes/" + _music)))
-		if _music_intro and audioManager.is_playing("Battle Themes/" + _music_intro):
-			audioManager.remove_audio_player(audioManager.get_audio_player_index(audioManager.get_audio_player_from_song("Battle Themes/" + _music_intro)))
-	elif _is_boss and audioManager.overworldBattleMusic:
-		for musicChanger in audioManager.musicChangers:
-			musicChanger.stop_music_immediately()
+	for audio_player in audioManager.get_music_player_list():
+		audio_player = audio_player as AudioStreamPlayer
+		if audio_player.stream and win_themes_path in audio_player.stream.resource_path:
+			audioManager.stop_music_player_by_name(audio_player.name)
+	audioManager.stop_music_player_by_name(audioManager.CHANNELS.BATTLE)
+	audioManager.stop_music_player_by_name(audioManager.CHANNELS.MENU)
+	if _is_boss and audioManager.overworld_battle_music:
+		audioManager.remove_all_music_changers()
+		audioManager.stop_music_player_by_name(audioManager.CHANNELS.OVERWORLD)
 
 func _turn_party_to_overworld():
 	for bp in _party_BPs:

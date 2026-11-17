@@ -422,7 +422,7 @@ func _enter_transition_door(scene):
 	_nav_stack.clear()
 	_transition_door.targetScene = scene
 	_transition_door.enter()
-	audioManager.fadeout_all_music(1)
+	audioManager.fadeout_all_music_players(1)
 
 func _on_door_done():
 	uiManager.close_commands_menu(true)

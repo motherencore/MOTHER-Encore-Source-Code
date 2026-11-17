@@ -12,14 +12,10 @@ onready var spark = preload("res://Nodes/Reusables/Overlap/BeamSpark.tscn")
 onready var sfx_shoot = load("res://Audio/Sound effects/Lloyd Beam.mp3")
 onready var sfx_hit = load("res://Audio/Sound effects/Laser Hit.wav")
 
-
 func _ready():
 	animationTree.active = true
 	animationTree.set("parameters/shoot/blend_position", inputVector)
 	audioManager.play_sfx(sfx_shoot, "Beam")
-	
-	
-	
 
 func _physics_process(delta):
 	if !gone:
@@ -78,8 +74,3 @@ func create_spark(animation):
 		add_child(sparkle)
 	sparkle.global_position = global_position
 	sparkle.animation = animation
-
-
-
-
-

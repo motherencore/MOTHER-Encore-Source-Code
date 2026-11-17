@@ -96,7 +96,7 @@ func reset_text_speed():
 	text_speed = 0.08
 
 func stop_music():
-	audioManager.fadeout_all_music(5)
+	audioManager.fadeout_all_music_players(5)
 
 func _on_AnimationPlayer_animation_finished(_anim_name):
 	$Objects/Door.enter()

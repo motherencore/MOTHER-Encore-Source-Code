@@ -13,6 +13,7 @@ var _audio_player_name: String
 var _is_playing := false
 var _time_idle := 0.0
 var _tween: SceneTreeTween
+var _previous_volume := 0.0
 
 func _ready():
 	$AudioStreamPlayer2D.stream = load("res://Audio/Music/" + _music_loop)
@@ -54,7 +55,8 @@ func _start_music():
 	var main_volume =  min(MAIN_MUSIC_VOLUME_BASE - MAIN_MUSIC_VOLUME_BASE * (global_position.distance_to(global.get_player().global_position) / max_distance), MAIN_MUSIC_VOLUME_REDUCTION)
 	print("volume " + str(main_volume))
 	print((global_position.distance_to(global.get_player().global_position) / max_distance))
-	audioManager.music_fadeto(0, main_volume, 1.5)
+	audioManager.fadeto_music_player_by_name(audioManager.CHANNELS.OVERWORLD, main_volume, 1.5)
+	_previous_volume = audioManager.get_music_player_by_name(audioManager.CHANNELS.OVERWORLD).volume_db
 	if _tween:
 		_tween.kill()
 	_tween = create_tween().set_parallel(true)
@@ -64,7 +66,7 @@ func _start_music():
 	_is_playing = true
 
 func _stop_music():
-	audioManager.music_fadeto(0, 0)
+	audioManager.fadeto_music_player_by_name(audioManager.CHANNELS.OVERWORLD, _previous_volume)
 	if _tween: _tween.kill()
 	_tween = create_tween().set_parallel(true)
 	_tween.tween_property($AudioStreamPlayer2D, "volume_db", -80, 1)
